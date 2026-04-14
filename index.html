@@ -2584,8 +2584,13 @@ function render() {
     const status = getStatus(e);
     const filter = document.getElementById("statusFilter").value;
 
-    if (filter === "진행중" && status === "지난") return false;
-    if (filter === "지난" && status !== "지난") return false;
+    // 기본 상태(전체/진행중)에서는 지난 이벤트를 숨기고,
+    // 지난 이벤트는 '지난 이벤트' 필터에서만 보이게 함
+    if (filter === "지난") {
+      if (status !== "지난") return false;
+    } else {
+      if (status === "지난") return false;
+    }
 
     const date = document.getElementById("dateFilter").value;
     if (date) {
