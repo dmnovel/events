@@ -1,0 +1,2279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BL 이벤트</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #f6f6f8;
+  color: #222;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 20px 40px;
+}
+
+.link-box {
+  max-width: 1000px;
+  margin: 18px auto 0;
+  padding: 0 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.link-box a {
+  display: inline-block;
+  padding: 9px 14px;
+  background: #eee8f7;
+  color: #5f4b7a;
+  border: 1px solid #ddd3eb;
+  border-radius: 9px;
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+  transition: 0.2s;
+  white-space: nowrap;
+}
+
+.link-box a:hover {
+  background: #e7dff2;
+}
+
+.tabs-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.quick-link-select {
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  min-width: 150px;
+}
+
+.tabs button {
+  padding: 10px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  color: #333;
+}
+
+.tabs button.active {
+  background: #7c3aed;
+  color: white;
+  border-color: #7c3aed;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.filters select,
+.filters input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  color: #333;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+}
+
+.card {
+  background: white;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #eee;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+}
+
+.card-banner {
+  background: linear-gradient(135deg, #8f7aa8, #b7a8ca);
+  color: white;
+  padding: 16px;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.card-body {
+  padding: 14px;
+}
+
+.card-date {
+  font-size: 13px;
+  color: #666;
+}
+
+.badge {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.badge.urgent { color: #e53935; }
+.badge.done { color: #999; }
+.badge.ongoing { color: #2e7d32; }
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  width: 90%;
+  max-width: 620px;
+  border-radius: 12px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: #999;
+  border: none;
+  background: transparent;
+}
+
+.modal-close:hover {
+  color: #333;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 14px;
+  font-size: 22px;
+  padding-right: 28px;
+}
+
+.modal-detail {
+  display: grid;
+  gap: 14px;
+}
+
+.modal-text {
+  line-height: 1.7;
+  color: #444;
+}
+
+.info-sections {
+  display: grid;
+  gap: 12px;
+}
+
+.info-section {
+  background: #faf8fd;
+  border: 1px solid #ece6f5;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.info-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #6f5a8d;
+  margin-bottom: 10px;
+}
+
+.instant-point-box {
+  margin-bottom: 14px;
+  border: 1px solid #e7e1f0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.instant-point-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.instant-point-label,
+.instant-point-value {
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.instant-point-label {
+  color: #6f5a8d;
+  font-weight: 700;
+  background: #f7f3fc;
+}
+
+.instant-point-value {
+  color: #333;
+  text-align: center;
+}
+
+.reward-table {
+  margin-bottom: 14px;
+  border: 1px solid #e7e1f0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: white;
+}
+
+.reward-head,
+.reward-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.reward-head {
+  background: #8ea2f0;
+  color: #1f2540;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.reward-head div,
+.reward-row div {
+  padding: 14px 16px;
+  text-align: center;
+}
+
+.reward-row {
+  border-top: 1px solid #ece6f5;
+  background: #fff;
+}
+
+.reward-row div {
+  font-size: 15px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.info-row {
+  display: grid;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.info-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #7d6a97;
+}
+
+.info-value {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.6;
+}
+
+.section-gap {
+  height: 20px;
+}
+
+.sub-section-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #7d6a97;
+  margin-top: 2px;
+}
+
+.modal-actions {
+  text-align: right;
+  margin-top: 4px;
+}
+
+.go-btn {
+  display: inline-block;
+  padding: 7px 12px;
+  background: #7c3aed;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.go-btn:hover {
+  background: #6d28d9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.quick-link-wrapper {
+  position: relative;
+  min-width: 150px;
+  z-index: 20;
+}
+
+.quick-link-btn {
+  width: 100%;
+  min-width: 150px;
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  text-align: left;
+  font-size: 14px;
+}
+
+.quick-link-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  left: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.quick-link-menu.open {
+  display: block;
+}
+
+.quick-link-menu a {
+  display: block;
+  padding: 12px 14px;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+  background: white;
+}
+
+.quick-link-menu a + a {
+  border-top: 1px solid #eee;
+}
+
+.quick-link-menu a:hover {
+  background: #f7f3fc;
+}
+
+.date-filter-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.date-icon {
+  width: 18px;
+  height: 18px;
+  color: #7d6a97;
+  flex: 0 0 auto;
+  pointer-events: none;
+}
+
+.date-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.date-display {
+  font-size: 14px;
+  color: #333;
+  white-space: nowrap;
+  pointer-events: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#dateFilter {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  cursor: pointer;
+  opacity: 0;
+}
+
+#dateFilter:focus {
+  outline: none;
+}
+
+#dateFilter::-webkit-calendar-picker-indicator {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  opacity: 0;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 16px 16px 32px;
+  }
+
+  .link-box {
+    padding: 0 16px;
+    margin-top: 14px;
+  }
+
+  .link-box a {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px 14px 28px;
+  }
+
+  .link-box {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 14px;
+  }
+
+  .tabs-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+  }
+
+  .tabs button {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 8px;
+    font-size: 14px;
+  }
+
+  .quick-link-wrapper,
+  .quick-link-btn,
+  .date-filter-wrap {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .filters {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .filters > select,
+  .filters > input,
+  .filters > .date-filter-wrap {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .modal {
+    padding: 12px;
+  }
+
+  .modal-content {
+    width: 100%;
+    max-width: 100%;
+    max-height: 85vh;
+    padding: 16px;
+  }
+
+  .reward-head div,
+  .reward-row div,
+  .instant-point-label,
+  .instant-point-value {
+    padding: 12px 10px;
+    font-size: 13px;
+    word-break: keep-all;
+  }
+
+  .info-value {
+    word-break: keep-all;
+  }
+}
+
+.quick-link-btn {
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+}
+.quick-link-btn .arrow {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+
+.top-utility-row {
+  max-width: 1000px;
+  margin: 18px auto 0;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+}
+
+.top-utility-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.top-utility-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.top-search-wrap {
+  width: min(320px, 100%);
+}
+
+#searchInput {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  color: #333;
+  font-size: 16px;
+  line-height: 1.4;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+@media (max-width: 600px) {
+  .top-utility-row {
+    padding: 0 14px;
+    margin-top: 14px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .top-utility-left,
+  .top-utility-right,
+  .top-search-wrap {
+    width: 100%;
+  }
+
+  .top-utility-right {
+    justify-content: stretch;
+  }
+
+  #searchInput {
+    font-size: 16px;
+  }
+}
+
+
+.date-filter-wrap {
+  cursor: pointer;
+}
+
+.date-filter-wrap * {
+  cursor: pointer;
+}
+
+#dateFilter {
+  cursor: pointer;
+}
+
+
+.payout-list {
+  display: grid;
+  gap: 16px;
+}
+
+.payout-group {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.payout-date-heading {
+  padding: 14px 16px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #5f4b7a;
+  background: #f7f3fc;
+  border-bottom: 1px solid #ece6f5;
+}
+
+.payout-items {
+  display: grid;
+}
+
+.payout-item {
+  padding: 14px 16px;
+  border-top: 1px solid #f1edf7;
+  cursor: pointer;
+}
+
+.payout-item:first-child {
+  border-top: none;
+}
+
+.payout-item:hover {
+  background: #fcfbfe;
+}
+
+.payout-item-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 4px;
+}
+
+.payout-item-detail {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.55;
+}
+
+.empty-state {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 24px 18px;
+  text-align: center;
+  color: #777;
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  .payout-date-heading {
+    font-size: 15px;
+    padding: 12px 14px;
+  }
+
+  .payout-item {
+    padding: 12px 14px;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<div style="width:100%; box-sizing:border-box; padding:10px 12px; background:#fafafa; border-bottom:1px solid #eee;">
+  <p style="font-size:12px; color:#888; margin:0; text-align:center;">
+  ※ 본 페이지는 이벤트 정보를 정리한 비공식 페이지이며, 자세한 내용은 각 이벤트 페이지를 참고해주세요.
+  </p>
+</div>
+
+
+<div class="top-utility-row">
+  <div class="top-utility-left">
+    <div class="link-box" style="margin:0; padding:0; max-width:none;">
+      <a href="https://ridibooks.com/event/bl-novel?fresh=1776090628579" target="_blank" rel="noopener noreferrer">
+        리디 이벤트 바로가기
+      </a>
+    </div>
+  </div>
+  <div class="top-utility-right">
+    <div class="top-search-wrap">
+      <input type="search" id="searchInput" placeholder="제목 검색" oninput="render()" enterkeyhint="search" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false">
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="tabs-row">
+    <div class="tabs">
+      <button onclick="setCategory('전체', this)" class="active">전체</button>
+      <button onclick="setCategory('웹소설', this)">웹소설</button>
+      <button onclick="setCategory('이북', this)">이북</button>
+      <button onclick="setCategory('지급일', this)">지급일</button>
+    </div>
+
+    <div class="quick-link-wrapper">
+      <button type="button" class="quick-link-btn" aria-expanded="false"><span>바로가기</span><span class="arrow">▼</span></button>
+      <div class="quick-link-menu">
+        <a href="https://ridibooks.com/event/26223" target="_blank" rel="noopener noreferrer">매일랜덤티켓</a>
+        <a href="https://ridibooks.com/event/93120" target="_blank" rel="noopener noreferrer">판매중지예정도서</a>
+        <a href="https://ridibooks.com/event/19350" target="_blank" rel="noopener noreferrer">위클리쿠폰</a>
+        <a href="https://ridibooks.com/event/75912" target="_blank" rel="noopener noreferrer">ONEPICK모음</a>
+        <a href="https://ridibooks.com/event/3799" target="_blank" rel="noopener noreferrer">십오야</a>
+        <a href="https://ridibooks.com/event/81283" target="_blank" rel="noopener noreferrer">웹소설혜택지도</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="filters">
+    <select id="statusFilter" onchange="render()">
+      <option value="전체">전체</option>
+      <option value="진행중">진행중</option>
+      <option value="지난">지난 이벤트</option>
+    </select>
+
+    <select id="sortFilter" onchange="render()">
+      <option value="latest">최신순</option>
+      <option value="urgent">마감임박순</option>
+    </select>
+
+    <div class="date-filter-wrap">
+      <span class="date-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3.5" y="5.5" width="17" height="15" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M7 3.8V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M17 3.8V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M3.5 9.5H20.5" stroke="currentColor" stroke-width="1.8"/>
+        </svg>
+      </span>
+      <span class="date-display" id="dateDisplay">날짜 선택</span>
+      <input type="date" id="dateFilter" onchange="render(); syncDateDisplay();" aria-label="날짜 선택">
+    </div>
+  </div>
+
+  <div class="grid" id="eventList"></div>
+</div>
+
+<div class="modal" id="modal" onclick="closeModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()" aria-label="닫기">✕</button>
+    <h2 id="modalTitle"></h2>
+    <div id="modalDetail" class="modal-detail"></div>
+  </div>
+</div>
+
+<script>
+const events = [
+  {
+    title: "ONE PICK 할로윈 <핏탕물>",
+    category: "이북",
+    start: "2026-04-13",
+    end: "2026-04-21",
+    detail: "",
+    url: "https://ridibooks.com/event/92982",
+    modalContent: `
+      <div class="modal-text"></div>
+      <div class="info-sections">
+        <div class="info-section">
+          <div class="info-section-title">리뷰 포인트</div>
+
+          <div class="instant-point-box">
+            <div class="instant-point-row">
+              <div class="instant-point-label">전원</div>
+              <div class="instant-point-value">1,500P</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">포인트 지급일</div>
+            <div class="info-value">이벤트 조건을 충족하는 즉시</div>
+          </div>
+
+
+      </div>
+        <div class="info-section">
+          <div class="sub-section-label">추첨 포인트</div>
+          <div class="reward-table">
+            <div class="reward-head">
+              <div>추첨 인원</div>
+              <div>리디포인트</div>
+            </div>
+            <div class="reward-row">
+              <div>5명 추첨</div>
+              <div>50,000P</div>
+            </div>
+            <div class="reward-row">
+              <div>50명 추첨</div>
+              <div>5,000P</div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">리뷰 선정 기간</div>
+            <div class="info-value">2026-04-13(월) 00:00 ~ 2026-04-21(화) 23:59</div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">포인트 지급일</div>
+            <div class="info-value">2026-04-30(목)</div>
+          </div>
+
+        </div>
+
+        <div class="info-section">
+          <div class="info-section-title">단 3일, 전원 추가 포인트</div>
+
+          <div class="instant-point-box">
+            <div class="instant-point-row">
+              <div class="instant-point-label">전원</div>
+              <div class="instant-point-value">3,000P</div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">이벤트 기간</div>
+            <div class="info-value">2026-04-13(월) 00:00 ~ 2026-04-15(수) 23:59</div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">포인트 지급일</div>
+            <div class="info-value">이벤트 조건을 충족하는 즉시</div>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-actions">
+        <a href="https://ridibooks.com/event/92982" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+      </div>
+    `
+  },
+  {
+    title: "<마왕이지만, 감금은 처음이라서요> 출간",
+    category: "이북",
+    start: "2026-04-13",
+    end: "2026-04-21",
+    url: "https://ridibooks.com/event/93199",
+    modalContent: `
+      <div class="modal-text">10%▼ & 1권무료 & 전원포인트</div>
+      <div class="info-sections">
+        <div class="info-section">
+          <div class="info-section-title">리뷰 포인트</div>
+
+          <div class="instant-point-box">
+            <div class="instant-point-row">
+              <div class="instant-point-label">전원</div>
+              <div class="instant-point-value">700P</div>
+            </div>
+          </div>
+
+
+          <div class="info-row">
+            <div class="info-label">포인트 지급일</div>
+            <div class="info-value">이벤트 조건을 충족하는 즉시</div>
+          </div>
+      </div>
+        <div class="info-section">
+        
+          <div class="info-section-title">리뷰 추가 추첨 포인트</div>
+
+          <div class="instant-point-box">
+            <div class="instant-point-row">
+              <div class="instant-point-label">100명</div>
+              <div class="instant-point-value">500P</div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">포인트 지급일</div>
+            <div class="info-value">2026-04-30(목)</div>
+          </div>
+	</div>
+          <div class="info-row">
+            <div class="info-label">이벤트 기간</div>
+            <div class="info-value">2026-04-13(월) 07:00 ~ 2026-04-21(화) 23:59</div>
+          </div>
+       
+      </div>
+      <div class="modal-actions">
+        <a href="https://ridibooks.com/event/93199" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+      </div>
+    `
+  },
+{
+  title: "<박해> 출간",
+  category: "이북",
+  start: "2026-04-13",
+  end: "2026-04-21",
+  url: "https://ridibooks.com/event/93200",
+  modalContent: `
+    <div class="modal-text">10%▼ &  전원포인트</div>
+    <div class="info-sections">
+      <div class="info-section">
+        <div class="info-section-title">리뷰 포인트</div>
+
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">전원</div>
+            <div class="instant-point-value">300P</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">이벤트 기간</div>
+          <div class="info-value">2026-04-13(월)  ~ 2026-04-21(화)</div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">포인트 지급일</div>
+          <div class="info-value">이벤트 조건을 충족하는 즉시</div>
+        </div>
+
+      </div>
+    </div>
+    <div class="modal-actions">
+      <a href="https://ridibooks.com/event/93200" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+    </div>
+  `
+},
+{
+  title: "<결혼은 했는데 (외전)> 출간",
+  category: "이북",
+  start: "2026-04-11",
+  end: "2026-04-18",
+  url: "https://ridibooks.com/event/93144",
+  modalContent: `
+    <div class="modal-text">비욘드특별외전 & 1권무료 & 전원포인트</div>
+    <div class="info-sections">
+      <div class="info-section">
+        <div class="info-section-title">전권 소장 및 열람</div>
+
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">전원</div>
+            <div class="instant-point-value">700P</div>
+          </div>
+        </div>
+
+
+
+        <div class="info-row">
+          <div class="info-label">포인트 지급일</div>
+          <div class="info-value">이벤트 조건을 충족하는 즉시</div>
+        </div>
+
+
+      </div>
+        <div class="info-section">
+          <div class="info-section-title">신규 외전 소장 모먼트</div>
+
+          <div class="instant-point-box">
+            <div class="instant-point-row">
+              <div class="instant-point-label">추첨 500명</div>
+              <div class="instant-point-value">500P</div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">포인트 지급일</div>
+            <div class="info-value">2026-04-28(화)</div>
+          </div>
+	</div>
+        <div class="info-row">
+          <div class="info-label">이벤트 기간</div>
+          <div class="info-value">2026-04-11(토) ~ 2026-04-18(토)</div>
+        </div>
+      
+    </div>
+    <div class="modal-actions">
+      <a href="https://ridibooks.com/event/93144" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+    </div>
+  `
+},
+{
+  title: "<어느 날, 우리집 침대에 NPC가 떨어졌다> 출간",
+  category: "이북",
+  start: "2026-04-09",
+  end: "2026-04-17",
+  url: "https://ridibooks.com/event/93143",
+  modalContent: `
+    <div class="modal-text">10%▼ &  1권무료 & 전원포인트</div>
+    <div class="info-sections">
+      <div class="info-section">
+        <div class="info-section-title">리뷰 포인트</div>
+
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">전원</div>
+            <div class="instant-point-value">700P</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">포인트 지급일</div>
+          <div class="info-value">이벤트 조건을 충족하는 즉시</div>
+        </div>
+      </div>
+        <div class="info-section">
+          <div class="info-section-title">리뷰 추가 추첨 포인트</div>
+
+          <div class="instant-point-box">
+            <div class="instant-point-row">
+              <div class="instant-point-label">100명</div>
+              <div class="instant-point-value">500P</div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">포인트 지급일</div>
+            <div class="info-value">2026-04-28(화)</div>
+          </div>
+        </div>
+          <div class="info-row">
+            <div class="info-label">이벤트 기간</div>
+            <div class="info-value">2026-04-09(목) 07:00 ~ 2026-04-17(금) 23:59</div>
+          </div>
+
+    </div>
+    <div class="modal-actions">
+      <a href="https://ridibooks.com/event/93143" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+    </div>
+  `
+},
+{
+  title: "<더티 클리셰> 출간",
+  category: "이북",
+  start: "2026-04-08",
+  end: "2026-04-16",
+  url: "https://ridibooks.com/event/93141",
+  modalContent: `
+    <div class="modal-text">30%▼ & 1권무료 & 전원포인트</div>
+    <div class="info-sections">
+      <div class="info-section">
+        <div class="info-section-title">리뷰 포인트</div>
+
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">전원</div>
+            <div class="instant-point-value">700P</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">포인트 지급일</div>
+          <div class="info-value">이벤트 조건을 충족하는 즉시</div>
+        </div>
+
+      </div>
+        <div class="info-section">
+
+        <div class="info-section-title">리뷰 추가 추첨 포인트</div>
+
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">추첨 100명</div>
+            <div class="instant-point-value">500P</div>
+          </div>
+        </div>
+
+
+        <div class="info-row">
+          <div class="info-label">포인트 지급일</div>
+          <div class="info-value">2026-04-28(화)</div>
+        </div>
+
+      </div>
+        <div class="info-row">
+          <div class="info-label">이벤트 기간</div>
+          <div class="info-value">2026-04-08(수) 07:00 ~ 2026-04-16(목) 23:59</div>
+        </div>
+    </div>
+    <div class="modal-actions">
+      <a href="https://ridibooks.com/event/93141" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+    </div>
+  `
+},
+{
+  title: "<지천명의 아이돌> 출간",
+  category: "이북",
+  start: "2026-04-07",
+  end: "2026-04-15",
+  url: "https://ridibooks.com/event/93140",
+  modalContent: `
+    <div class="modal-text">10%▼ & 리뷰 포인트</div>
+    <div class="info-sections">
+      <div class="info-section">
+        <div class="info-section-title">리뷰 포인트</div>
+
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">전원</div>
+            <div class="instant-point-value">500P</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">포인트 지급일</div>
+          <div class="info-value">이벤트 조건을 충족하는 즉시</div>
+        </div>
+
+      </div>
+        <div class="info-section">
+
+        <div class="info-section-title">리뷰 추가 추첨 포인트</div>
+
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">추첨 100명</div>
+            <div class="instant-point-value">500P</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">포인트 지급일</div>
+          <div class="info-value">2026-04-23(목)</div>
+        </div>
+
+      </div>
+
+        <div class="info-row">
+          <div class="info-label">이벤트 기간</div>
+          <div class="info-value">2026-04-07(화) 07:00 ~ 2026-04-15(수) 23:59</div>
+        </div>
+
+    </div>
+    <div class="modal-actions">
+      <a href="https://ridibooks.com/event/93140" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+    </div>
+  `
+},
+{
+  title: "페로체 <스물의 결혼 연애> 출간",
+  category: "이북",
+  start: "2026-04-06",
+  end: "2026-04-14",
+  url: "https://ridibooks.com/event/93138",
+  modalContent: `
+    <div class="modal-text">10%▼ &  전원포인트</div>
+    <div class="info-sections">
+      <div class="info-section">
+        <div class="info-section-title">전권 유료 소장 및 리뷰 작성</div>
+
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">전원</div>
+            <div class="instant-point-value">500P</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">이벤트 기간</div>
+          <div class="info-value">2026-04-06(월) ~ 2026-04-14(화)</div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">포인트 지급일</div>
+          <div class="info-value">이벤트 조건을 충족하는 즉시</div>
+        </div>
+
+      </div>
+    </div>
+    <div class="modal-actions">
+      <a href="https://ridibooks.com/event/93138" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+    </div>
+  `
+},
+{
+  title: "프라이데이 1권 무료데이",
+  category: "이북",
+  start: "2026-04-03",
+  end: "2026-04-30",
+  url: "https://ridibooks.com/event/92997",
+  modalContent: `
+    <div class="modal-text">1권무료 & 10%▼</div>
+    <div class="info-sections">
+      <div class="info-section">
+        <div class="info-section-title">대상 작품 1만원 이상 유료 소장 및 결제</div>
+
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">전원 지급</div>
+            <div class="instant-point-value">500P(최대 2,500P)</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">이벤트 기간</div>
+          <div class="info-value">매주 금요일 00:00 ~ 목요일 23:59</div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">포인트 지급일</div>
+          <div class="info-value">이벤트 조건을 충족하는 즉시</div>
+        </div>
+      </div>
+    <div class="info-sections">
+      <div class="info-section">
+        <div class="info-section-title">대상 작품 리뷰 추첨 이벤트</div>
+
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">100명</div>
+            <div class="instant-point-value">500P</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">이벤트 기간</div>
+          <div class="info-value">매주 금요일 00:00 ~ 목요일 23:59</div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">포인트 지급일</div>
+          <div class="info-value">04-16, 04-23, 04-30, 05-07</div>
+        </div>
+
+      </div>
+    </div>
+    <div class="modal-actions">
+      <a href="https://ridibooks.com/event/92997" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+    </div>
+  `
+},
+{
+  title: "벨 바람 휘날리며",
+  category: "이북",
+  start: "2026-04-08",
+  end: "2026-04-15",
+  url: "https://ridibooks.com/event/93142",
+  modalContent: `
+    <div class="modal-text">대상 작품 6천원 이상 소장(최대 3회 900P)</div>
+    <div class="info-sections">
+      <div class="info-section">
+        <div class="info-section-title">리뷰 포인트</div>
+
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">전원</div>
+            <div class="instant-point-value">300P</div>
+          </div>
+        </div>
+
+
+        <div class="info-row">
+          <div class="info-label">포인트 지급일</div>
+          <div class="info-value">이벤트 조건을 충족하는 즉시</div>
+        </div>
+
+      </div>
+        <div class="info-section">
+
+        <div class="info-section-title">추첨 포인트</div>
+
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">300명 추첨</div>
+            <div class="instant-point-value">500P</div>
+          </div>
+	</div>
+        <div class="info-row">
+          <div class="info-label">당첨자 발표일</div>
+          <div class="info-value">2026-04-28(화)</div>
+        </div>
+        </div>
+      </div>
+
+        <div class="info-row">
+          <div class="info-label">이벤트 기간</div>
+          <div class="info-value">2026-04-08(수) ~ 2026-04-15(수)</div>
+        </div>
+    </div>
+    <div class="modal-actions">
+      <a href="https://ridibooks.com/event/93142" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+    </div>
+  `
+},
+{
+  title: "<망돌 탈출했더니 결혼하자고?> 출간",
+  category: "웹소설",
+  start: "2026-04-13",
+  end: "2026-04-15",
+  url: "https://ridibooks.com/event/92905",
+  modalContent: `
+    <div class="modal-text"></div>
+    <div class="info-sections">
+      <div class="info-section">
+        <div class="info-section-title">리뷰 포인트(유료 20화 이상 소장)</div>
+
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">전원 랜덤티켓(최대 2회)</div>
+            <div class="instant-point-value">~2,000P(최소 200P ~ 최대 4,000P)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-section-title">리뷰 추첨 포인트</div>
+
+        <div class="reward-table">
+          <div class="reward-head">
+            <div>조건</div>
+            <div>포인트</div>
+          </div>
+          <div class="reward-row">
+            <div>유/무료 5화 열람 & 리뷰 작성</div>
+            <div>1,000명 500P</div>
+          </div>
+          <div class="reward-row">
+            <div>화별 댓글 작성</div>
+            <div>100명 500P</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">포인트 지급일</div>
+          <div class="info-value">2026-04-21(화)</div>
+        </div>
+	</div>
+        <div class="info-row">
+          <div class="info-label">이벤트 기간</div>
+          <div class="info-value">2026-04-13(월) ~ 2026-04-15(수)</div>
+        </div>
+    </div>
+    <div class="modal-actions">
+      <a href="https://ridibooks.com/event/92905" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+    </div>
+  `
+},
+{
+  title: "<심연에서는 양을 따라가세요> 출간",
+  category: "웹소설",
+  start: "2026-04-10",
+  end: "2026-04-16",
+  url: "https://ridibooks.com/event/92903",
+  modalContent: `
+    <div class="modal-text"></div>
+    <div class="info-sections">
+      <div class="info-section">
+        <div class="info-section-title">유료 30화 이상 소장 및 열람</div>
+
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">전원</div>
+            <div class="instant-point-value">1,000P</div>
+          </div>
+        </div>
+
+
+        <div class="info-row">
+          <div class="info-label">포인트 지급일</div>
+          <div class="info-value">이벤트 조건을 충족하는 즉시</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">이벤트 기간</div>
+          <div class="info-value">2026-04-10(금) 07:00 ~ 2026-04-16(목) 23:59</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <a href="https://ridibooks.com/event/92903" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+    </div>
+  `
+},
+{
+  title: "<쉘터> 완결",
+  category: "웹소설",
+  start: "2026-04-13",
+  end: "2026-04-19",
+  url: "https://ridibooks.com/event/93093",
+  modalContent: `
+    <div class="modal-text"></div>
+    <div class="info-sections">
+      <div class="info-section">
+        <div class="info-section-title">리뷰 포인트</div>
+
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">50명 추첨 포인트</div>
+            <div class="instant-point-value">500P</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">이벤트 기간</div>
+          <div class="info-value">2026-04-13(월) ~ 2026-04-19(일)</div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">포인트 지급일</div>
+          <div class="info-value">2026-04-21(화)</div>
+        </div>
+
+      </div>
+    </div>
+    <div class="modal-actions">
+      <a href="https://ridibooks.com/event/93093" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+    </div>
+  `
+},
+{
+  title: "<소꿉 형님> 완결",
+  category: "웹소설",
+  start: "2026-04-10",
+  end: "2026-04-16",
+  url: "https://ridibooks.com/event/93092",
+  modalContent: `
+    <div class="modal-text">대상 작품 6천원 이상 소장(최대 3회 900P)</div>
+    <div class="info-sections">
+      <div class="info-section">
+        <div class="info-section-title">리뷰 포인트</div>
+
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">50명 추첨</div>
+            <div class="instant-point-value">500P</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">이벤트 기간</div>
+          <div class="info-value">2026-04-10(금) ~ 2026-04-16(목)</div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">포인트 지급일</div>
+          <div class="info-value">2026-04-21(화)</div>
+        </div>
+
+      </div>
+    </div>
+    <div class="modal-actions">
+      <a href="https://ridibooks.com/event/93092" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+    </div>
+  `
+},
+{
+  title: "외전 모험 시작",
+  category: "웹소설",
+  start: "2026-04-10",
+  end: "2026-04-16",
+  url: "https://ridibooks.com/event/92901",
+  modalContent: `
+    <div class="modal-text"></div>
+    <div class="info-sections">
+      <div class="info-section">
+        <div class="info-section-title">소장 포인트(중복 수령 불가, 최대 1,000P)</div>
+
+        <div class="reward-table">
+          <div class="reward-head">
+            <div>조건</div>
+            <div>포인트</div>
+          </div>
+          <div class="reward-row">
+            <div>유료 10화 소장</div>
+            <div>300P</div>
+          </div>
+          <div class="reward-row">
+            <div>유료 30화 소장</div>
+            <div>1,000P</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">안내</div>
+          <div class="info-value">이벤트 페이지에 댓글 작성 필수</div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">이벤트 기간</div>
+          <div class="info-value">2026-04-10(금) 07:00 ~ 2026-04-16(목) 23:59</div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">당첨자 발표일</div>
+          <div class="info-value">2026-04-21(화)</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <a href="https://ridibooks.com/event/92901" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+    </div>
+  `
+},
+{
+  title: "<나에게만 순종! 기사님> 출간",
+  category: "이북",
+  start: "2026-04-14",
+  end: "2026-04-22",
+  url: "https://ridibooks.com/event/93311",
+  modalContent: `
+    <div class="modal-text">10%▼ & 1권무료 & 전원포인트</div>
+    <div class="info-sections">
+      <div class="info-section">
+        <div class="info-section-title">리뷰 포인트</div>
+
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">전원</div>
+            <div class="instant-point-value">700P</div>
+          </div>
+        </div>
+
+
+        <div class="info-row">
+          <div class="info-label">포인트 지급일</div>
+          <div class="info-value">이벤트 조건을 충족하는 즉시</div>
+        </div>
+      </div>
+        <div class="info-section">
+          <div class="info-section-title">리뷰 추가 추첨 포인트</div>
+
+          <div class="instant-point-box">
+            <div class="instant-point-row">
+              <div class="instant-point-label">100명</div>
+              <div class="instant-point-value">500P</div>
+            </div>
+          </div>
+
+
+
+          <div class="info-row">
+            <div class="info-label">포인트 지급일</div>
+            <div class="info-value">2026-04-30(목)</div>
+          </div>
+	</div>
+          <div class="info-row">
+            <div class="info-label">이벤트 기간</div>
+            <div class="info-value">2026-04-14(화) 07:00 ~ 2026-04-22(수) 23:59</div>
+          </div>     
+
+    </div>
+    <div class="modal-actions">
+      <a href="https://ridibooks.com/event/93311" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+    </div>
+  `
+},
+{
+  title: "<이런 에스퍼는 사양합니다> 출간",
+  category: "이북",
+  start: "2026-04-14",
+  end: "2026-04-22",
+  url: "https://ridibooks.com/event/93309",
+  modalContent: `
+    <div class="modal-text">50%▼ & 1권무료 & 전원포인트</div>
+      <div class="info-sections">
+        <div class="info-section">
+          <div class="info-section-title">리뷰 포인트</div>
+
+          <div class="instant-point-box">
+            <div class="instant-point-row">
+              <div class="instant-point-label">전원</div>
+              <div class="instant-point-value">700P</div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">포인트 지급일</div>
+            <div class="info-value">이벤트 조건을 충족하는 즉시</div>
+          </div>
+
+      </div>
+        <div class="info-section">
+          <div class="sub-section-label">추첨 포인트</div>
+          <div class="instant-point-box">
+            <div class="instant-point-row">
+              <div class="instant-point-label">100명</div>
+              <div class="instant-point-value">500P</div>
+            </div>
+          </div>
+          
+
+
+          <div class="info-row">
+            <div class="info-label">포인트 지급일</div>
+            <div class="info-value">2026-04-30(목)</div>
+          </div>
+	</div>
+          <div class="info-row">
+            <div class="info-label">이벤트 기간</div>
+            <div class="info-value">2026-04-14(화) 07:00 ~ 2026-04-22(수) 23:59</div>
+          </div>
+        </div>
+          <div class="section-gap"></div>
+
+        <div class="info-section">
+          <div class="info-section-title">4월 14일 하루, 추가 포인트</div>
+
+          <div class="instant-point-box">
+            <div class="instant-point-row">
+              <div class="instant-point-label">전원</div>
+              <div class="instant-point-value">3,000P</div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">포인트 지급일</div>
+            <div class="info-value">이벤트 조건을 충족하는 즉시</div>
+          </div>
+        </div>
+    </div>
+    <div class="modal-actions">
+      <a href="https://ridibooks.com/event/93309" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+    </div>
+  `
+},
+{
+  title: "<어쩌다 메리지> 출간",
+  category: "웹소설",
+  start: "2026-04-14",
+  end: "2026-04-16",
+  url: "https://ridibooks.com/event/93186",
+  modalContent: `
+    <div class="modal-text"></div>
+    <div class="info-sections">
+      <div class="info-section">
+        <div class="info-section-title">4월 14일 하루, 60화 전체 소장 및 리뷰 60% 포백</div>
+
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">전원</div>
+            <div class="instant-point-value">추가 2,420P</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">포인트 지급일</div>
+          <div class="info-value">이벤트 조건을 충족하는 즉시</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">안내</div>
+          <div class="info-value">유료30화 소장 이벤트와 중복 참여 가능(최대 3,420P)</div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-section-title">2026-04-14(화) ~ 04-16(목)</div>
+
+        <div class="sub-section-label">유료 30화 소장 및 열람 & 리뷰 작성</div>
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">전원</div>
+            <div class="instant-point-value">1,000P</div>
+          </div>
+        </div>
+
+        <div class="sub-section-label">유/무료 5화 소장 및 열람 & 리뷰 작성</div>
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">추첨 1,000명</div>
+            <div class="instant-point-value">500P</div>
+          </div>
+        </div>
+
+        <div class="sub-section-label">작품 내 화별 댓글 작성</div>
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">추첨 100명</div>
+            <div class="instant-point-value">500P</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">당첨자 발표일</div>
+          <div class="info-value">2026-04-23(목)</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <a href="https://ridibooks.com/event/93186" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+    </div>
+  `
+},
+{
+  title: "누구나 최대 5,000P 십오야 ALL KILL",
+  category: "이북",
+  start: "2026-04-14",
+  end: "2026-04-21",
+  url: "https://ridibooks.com/event/93310",
+  modalContent: `
+    <div class="modal-text">매월 십오야 14일부터 21일</div>
+
+    <div class="info-sections">
+      <div class="info-section">
+        <div class="info-section-title">신작 소장 및 리뷰 작성</div>
+
+        <div class="sub-section-label">10만원 이상 소장 시</div>
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">전원</div>
+            <div class="instant-point-value">5,000P</div>
+          </div>
+        </div>
+
+        <div class="sub-section-label">5만원 이상 소장 시</div>
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">전원</div>
+            <div class="instant-point-value">2,500P</div>
+          </div>
+        </div>
+
+        <div class="sub-section-label">2만원 이상 소장 시</div>
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">전원</div>
+            <div class="instant-point-value">1,000P</div>
+          </div>
+        </div>
+
+        <div class="sub-section-label">1만원 이상 소장 시</div>
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">전원</div>
+            <div class="instant-point-value">500P</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">안내</div>
+          <div class="info-value">이벤트 페이지에 댓글 작성 필수</div>
+        </div>
+
+        <div class="section-gap"></div>
+
+        <div class="info-section-title">신작 소장 및 리뷰 작성 추첨 랜덤티켓</div>
+        <div class="instant-point-box">
+          <div class="instant-point-row">
+            <div class="instant-point-label">1,000명 추첨</div>
+            <div class="instant-point-value">200P~2,000P</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-label">포인트 및 랜덤티켓 증정일</div>
+        <div class="info-value">2026-04-30(목) 18시 이후</div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-label">이벤트 기간</div>
+        <div class="info-value">2026-04-14(화) 00:00 ~ 2026-04-21(화) 23:59</div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <a href="https://ridibooks.com/event/93310" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+    </div>
+  `
+}
+
+];
+
+let currentCategory = "전체";
+
+function goQuickLink(select) {
+  const url = select.value;
+  if (!url) return;
+  window.open(url, "_blank");
+  select.selectedIndex = 0;
+}
+
+function setCategory(cat, btn) {
+  currentCategory = cat;
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateFilterVisibility();
+  updateDateFilterLabel();
+  render();
+}
+
+function initQuickLinkMenu() {
+  const quickBtn = document.querySelector('.quick-link-btn');
+  const quickMenu = document.querySelector('.quick-link-menu');
+  const quickLinks = document.querySelectorAll('.quick-link-menu a');
+  const arrow = quickBtn ? quickBtn.querySelector('.arrow') : null;
+
+  if (!quickBtn || !quickMenu) return;
+  if (quickBtn.dataset.bound === 'true') return;
+  quickBtn.dataset.bound = 'true';
+
+  const closeMenu = () => {
+    quickMenu.classList.remove('open');
+    quickBtn.setAttribute('aria-expanded', 'false');
+    if (arrow) arrow.textContent = '▼';
+  };
+
+  const openMenu = () => {
+    quickMenu.classList.add('open');
+    quickBtn.setAttribute('aria-expanded', 'true');
+    if (arrow) arrow.textContent = '▲';
+  };
+
+  quickBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (quickMenu.classList.contains('open')) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  });
+
+  quickMenu.addEventListener('click', function(e) {
+    e.stopPropagation();
+  });
+
+  quickLinks.forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeMenu();
+      window.open(this.href, '_blank', 'noopener,noreferrer');
+    });
+  });
+
+  document.addEventListener('click', function() {
+    if (quickMenu.classList.contains('open')) {
+      closeMenu();
+    }
+  });
+}
+
+
+
+function syncDateDisplay() {
+  const input = document.getElementById('dateFilter');
+  const display = document.getElementById('dateDisplay');
+  if (!input || !display) return;
+
+  if (!input.value) {
+    display.textContent = currentCategory === '지급일' ? '지급일 선택' : '날짜 선택';
+    return;
+  }
+
+  const parts = input.value.split('-');
+  if (parts.length === 3) {
+    display.textContent = `${parts[0]}-${parts[1]}-${parts[2]}`;
+  } else {
+    display.textContent = input.value;
+  }
+}
+
+function initSearchInput() {
+  const searchInput = document.getElementById('searchInput');
+  const eventList = document.getElementById('eventList');
+  if (!searchInput || !eventList) return;
+  if (searchInput.dataset.bound === 'true') return;
+  searchInput.dataset.bound = 'true';
+
+  searchInput.addEventListener('focus', function() {
+    const el = this;
+    setTimeout(function() {
+      el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }, 150);
+  });
+
+  searchInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      render();
+      this.blur();
+      setTimeout(function() {
+        eventList.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      }, 80);
+    }
+  });
+}
+
+
+function updateDateFilterLabel() {
+  const dateDisplay = document.getElementById('dateDisplay');
+  const dateInput = document.getElementById('dateFilter');
+  if (!dateDisplay || !dateInput) return;
+
+  if (dateInput.value) {
+    syncDateDisplay();
+  } else {
+    dateDisplay.textContent = currentCategory === '지급일' ? '지급일 선택' : '날짜 선택';
+  }
+}
+
+function updateFilterVisibility() {
+  const statusFilter = document.getElementById('statusFilter');
+  const sortFilter = document.getElementById('sortFilter');
+  if (!statusFilter || !sortFilter) return;
+
+  const isPayoutMode = currentCategory === '지급일';
+  statusFilter.style.display = isPayoutMode ? 'none' : '';
+  sortFilter.style.display = isPayoutMode ? 'none' : '';
+}
+
+function extractDatesFromText(text) {
+  const results = [];
+  if (!text) return results;
+
+  const fullMatches = text.match(/\d{4}-\d{2}-\d{2}/g) || [];
+  fullMatches.forEach(d => {
+    if (!results.includes(d)) results.push(d);
+  });
+
+  const shortMatches = text.match(/(?<!\d)(\d{2})-(\d{2})(?!\d)/g) || [];
+  shortMatches.forEach(md => {
+    const normalized = `2026-${md}`;
+    if (!results.includes(normalized)) results.push(normalized);
+  });
+
+  return results;
+}
+
+function extractPayoutEntries(eventItem) {
+  const source = eventItem.modalContent || '';
+  if (!source) return [];
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(source, 'text/html');
+  const entries = [];
+  const payoutLabelRegex = /(포인트 지급일|당첨자 발표일|포인트 및 랜덤티켓 증정일)/;
+  const immediateRegex = /이벤트 조건.*즉시|조건을 충족하는 즉시|충족 즉시|지급 즉시|즉시 지급|즉시/;
+
+  doc.querySelectorAll('.info-sections').forEach(group => {
+    const children = [...group.children].filter(el => el.classList && (el.classList.contains('info-section') || el.classList.contains('info-row')));
+
+    for (let i = 0; i < children.length; i++) {
+      const el = children[i];
+      if (!el.classList.contains('info-section')) continue;
+
+      const sectionTitle = (el.querySelector('.info-section-title')?.textContent || '').trim();
+      const rewardSummaries = [];
+
+      el.querySelectorAll('.instant-point-row').forEach(row => {
+        const label = (row.querySelector('.instant-point-label')?.textContent || '').trim();
+        const value = (row.querySelector('.instant-point-value')?.textContent || '').trim();
+        if (label || value) rewardSummaries.push([label, value].filter(Boolean).join(' · '));
+      });
+
+      el.querySelectorAll('.reward-row').forEach(row => {
+        const cells = [...row.querySelectorAll('div')].map(v => v.textContent.trim()).filter(Boolean);
+        if (cells.length) rewardSummaries.push(cells.join(' · '));
+      });
+
+      if (!rewardSummaries.length && sectionTitle) {
+        rewardSummaries.push(sectionTitle);
+      }
+
+      if (!rewardSummaries.length) continue;
+
+      let matched = false;
+
+      el.querySelectorAll('.info-row').forEach(infoRow => {
+        const label = (infoRow.querySelector('.info-label')?.textContent || '').trim();
+        const value = (infoRow.querySelector('.info-value')?.textContent || '').trim();
+
+        if (!payoutLabelRegex.test(label)) return;
+        if (!value || immediateRegex.test(value)) return;
+
+        const dates = extractDatesFromText(value);
+        if (!dates.length) return;
+
+        dates.forEach(dateStr => {
+          rewardSummaries.forEach(summary => {
+            entries.push({
+              date: dateStr,
+              title: eventItem.title,
+              summary,
+              event: eventItem
+            });
+          });
+        });
+        matched = true;
+      });
+
+      if (matched) continue;
+
+      for (let j = i + 1; j < children.length; j++) {
+        const sibling = children[j];
+
+        if (sibling.classList.contains('info-section')) break;
+        if (!sibling.classList.contains('info-row')) continue;
+
+        const label = (sibling.querySelector('.info-label')?.textContent || '').trim();
+        const value = (sibling.querySelector('.info-value')?.textContent || '').trim();
+
+        if (!payoutLabelRegex.test(label)) continue;
+        if (!value || immediateRegex.test(value)) break;
+
+        const dates = extractDatesFromText(value);
+        if (!dates.length) break;
+
+        dates.forEach(dateStr => {
+          rewardSummaries.forEach(summary => {
+            entries.push({
+              date: dateStr,
+              title: eventItem.title,
+              summary,
+              event: eventItem
+            });
+          });
+        });
+        break;
+      }
+    }
+  });
+
+  const uniqueEntries = [];
+  const seen = new Set();
+
+  entries.forEach(item => {
+    const key = `${item.date}__${item.title}__${item.summary}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    uniqueEntries.push(item);
+  });
+
+  return uniqueEntries;
+}
+
+function renderPayoutSchedule() {
+  const list = document.getElementById("eventList");
+  list.className = "payout-list";
+  list.innerHTML = "";
+
+  const searchKeyword = (document.getElementById("searchInput")?.value || "").trim().toLowerCase();
+  const selectedDate = document.getElementById("dateFilter")?.value || "";
+
+  let payoutEntries = [];
+  events.forEach(eventItem => {
+    payoutEntries = payoutEntries.concat(extractPayoutEntries(eventItem));
+  });
+
+  if (searchKeyword) {
+    payoutEntries = payoutEntries.filter(item => {
+      const haystack = [item.title, item.summary, item.date].join(" ").toLowerCase();
+      return haystack.includes(searchKeyword);
+    });
+  }
+
+  if (selectedDate) {
+    payoutEntries = payoutEntries.filter(item => item.date === selectedDate);
+  }
+
+  payoutEntries.sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title));
+
+  if (!payoutEntries.length) {
+    list.innerHTML = '<div class="empty-state">해당 지급일 일정이 없습니다.</div>';
+    return;
+  }
+
+  const grouped = {};
+  payoutEntries.forEach(item => {
+    if (!grouped[item.date]) grouped[item.date] = [];
+    grouped[item.date].push(item);
+  });
+
+  Object.keys(grouped).sort().forEach(dateKey => {
+    const group = document.createElement("div");
+    group.className = "payout-group";
+
+    const heading = document.createElement("div");
+    heading.className = "payout-date-heading";
+    heading.textContent = dateKey;
+    group.appendChild(heading);
+
+    const itemsWrap = document.createElement("div");
+    itemsWrap.className = "payout-items";
+
+    grouped[dateKey].forEach(item => {
+      const row = document.createElement("div");
+      row.className = "payout-item";
+      row.onclick = () => openModal(item.event);
+      row.innerHTML = `
+        <div class="payout-item-title">${item.title}</div>
+        <div class="payout-item-detail">${item.summary}</div>
+      `;
+      itemsWrap.appendChild(row);
+    });
+
+    group.appendChild(itemsWrap);
+    list.appendChild(group);
+  });
+}
+
+
+function getStatus(e) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const end = new Date(e.end);
+  end.setHours(0, 0, 0, 0);
+
+  if (today > end) return "지난";
+
+  const diff = Math.floor((end - today) / (1000 * 60 * 60 * 24));
+
+  if (diff === 0) return "오늘 마감";
+  if (diff === 1) return "D-1";
+  if (diff === 2) return "D-2";
+
+  return "진행중";
+}
+
+function render() {
+  const list = document.getElementById("eventList");
+  list.className = "grid";
+  list.innerHTML = "";
+
+  if (currentCategory === "지급일") {
+    renderPayoutSchedule();
+    return;
+  }
+
+  let filtered = events.filter(e => {
+    if (currentCategory !== "전체" && e.category !== "전체" && e.category !== currentCategory) {
+      return false;
+    }
+
+    const searchKeyword = (document.getElementById("searchInput")?.value || "").trim().toLowerCase();
+    if (searchKeyword) {
+      const haystack = [
+        e.title || "",
+        e.category || "",
+        e.detail || "",
+        e.modalContent || ""
+      ].join(" ").toLowerCase();
+      if (!haystack.includes(searchKeyword)) return false;
+    }
+
+    const status = getStatus(e);
+    const filter = document.getElementById("statusFilter").value;
+
+    if (filter === "진행중" && status === "지난") return false;
+    if (filter === "지난" && status !== "지난") return false;
+
+    const date = document.getElementById("dateFilter").value;
+    if (date) {
+      const d = new Date(date);
+      d.setHours(12, 0, 0, 0);
+
+      const start = new Date(e.start);
+      const end = new Date(e.end);
+      start.setHours(0, 0, 0, 0);
+      end.setHours(23, 59, 59, 999);
+
+      if (!(start <= d && d <= end)) return false;
+    }
+
+    return true;
+  });
+
+  const sort = document.getElementById("sortFilter").value;
+
+  if (sort === "urgent") {
+  filtered.sort((a, b) => new Date(a.end) - new Date(b.end));
+} else {
+  filtered.sort((a, b) => new Date(b.start) - new Date(a.start));
+}
+
+  filtered.forEach(e => {
+    const status = getStatus(e);
+
+    let badgeClass = "ongoing";
+    if (status === "오늘 마감" || status === "D-1" || status === "D-2" || status === "임박") badgeClass = "urgent";
+    if (status === "지난") badgeClass = "done";
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.onclick = () => openModal(e);
+
+    card.innerHTML = `
+      <div class="card-banner">${e.title}</div>
+      <div class="card-body">
+        <div class="card-date">${e.start} ~ ${e.end}</div>
+        <div class="badge ${badgeClass}">${status}</div>
+      </div>
+    `;
+
+    list.appendChild(card);
+  });
+}
+
+function openModal(e) {
+  document.getElementById("modal").style.display = "flex";
+  document.getElementById("modalTitle").innerText = e.title;
+  document.getElementById("modalDetail").innerHTML = e.modalContent || `
+    <div class="modal-text">${e.detail || ''}</div>
+    <div class="modal-actions">
+      <a href="${e.url}" target="_blank" rel="noopener noreferrer" class="go-btn">이벤트 이동</a>
+    </div>
+  `;
+}
+
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+}
+
+document.addEventListener("keydown", function(event) {
+  if (event.key === "Escape") {
+    closeModal();
+  }
+});
+
+
+syncDateDisplay();
+updateFilterVisibility();
+updateDateFilterLabel();
+initSearchInput();
+initQuickLinkMenu();
+render();
+
+</script>
+
+</body>
+</html>
