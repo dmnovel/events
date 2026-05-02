@@ -600,6 +600,159 @@
         top:12px!important;
       }
     }
+
+
+    /* ♥내 취향♥ 버튼 + 카드 팝업 */
+    .top-actions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-left:auto;
+      position:relative;
+    }
+    .taste-wrap{
+      position:relative;
+      display:inline-flex;
+      align-items:center;
+    }
+    .taste-top-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:auto!important;
+      min-height:34px!important;
+      padding:0 12px!important;
+      background:#fff!important;
+      color:#9b5262!important;
+      border:1px solid #dfcdd2!important;
+      border-radius:999px!important;
+      font-weight:950!important;
+      font-size:12px!important;
+      line-height:1!important;
+      white-space:nowrap;
+      box-shadow:0 2px 8px rgba(80,55,45,.06);
+    }
+    .taste-top-btn:hover{background:#fff6f8!important;border-color:#cfaeb6!important;}
+    .taste-popover{
+      position:absolute;
+      top:calc(100% + 9px);
+      right:0;
+      width:min(340px,calc(100vw - 28px));
+      max-height:min(70vh,520px);
+      overflow:auto;
+      display:none;
+      z-index:80;
+      background:#ffffff;
+      border:1px solid #e4d5d1;
+      border-radius:16px;
+      box-shadow:0 16px 34px rgba(80,55,45,.16);
+      padding:13px;
+    }
+    .taste-popover.open{display:block;}
+    .taste-popover::before{
+      content:"";
+      position:absolute;
+      top:-7px;
+      right:28px;
+      width:12px;
+      height:12px;
+      background:#ffffff;
+      border-left:1px solid #e4d5d1;
+      border-top:1px solid #e4d5d1;
+      transform:rotate(45deg);
+    }
+    .taste-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:10px;
+      position:relative;
+      z-index:1;
+    }
+    .taste-head h2{
+      margin:0;
+      font-size:15px;
+      letter-spacing:-.03em;
+      color:#4f3c36;
+    }
+    .taste-close{
+      width:30px!important;
+      min-height:30px!important;
+      height:30px!important;
+      padding:0!important;
+      border-radius:999px!important;
+      background:#f7f0f1!important;
+      color:#7d6067!important;
+      border:1px solid #ead8da!important;
+      font-size:16px!important;
+      line-height:1!important;
+    }
+    .taste-desc{
+      margin:0 0 10px;
+      color:#8b756d;
+      font-size:12px;
+      line-height:1.45;
+    }
+    .taste-list{
+      display:grid;
+      gap:7px;
+      position:relative;
+      z-index:1;
+    }
+    .taste-item{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:8px;
+      align-items:center;
+      background:#fffdf9;
+      border:1px solid #eee2dc;
+      border-radius:12px;
+      padding:9px 10px;
+    }
+    .taste-item-title{
+      margin:0;
+      font-size:13px;
+      font-weight:950;
+      line-height:1.35;
+      color:#302a27;
+    }
+    .taste-item-meta{
+      margin:2px 0 0;
+      font-size:12px;
+      color:#8b756d;
+    }
+    .taste-item-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:30px;
+      min-width:46px;
+      padding:0 9px;
+      border-radius:10px;
+      background:#6f5a50!important;
+      color:#fff!important;
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
+      border:1px solid #6f5a50!important;
+    }
+    .taste-item-link:hover{background:#5f4c43!important;border-color:#5f4c43!important;}
+    .taste-item-link.disabled{
+      background:#f4eeee!important;
+      color:#b09c96!important;
+      border-color:#ead8da!important;
+      cursor:not-allowed;
+      pointer-events:none;
+    }
+    @media(max-width:980px){
+      .top-link-row{align-items:flex-start;}
+      .top-actions{gap:6px;}
+      .taste-top-btn{min-height:32px!important;padding:0 10px!important;font-size:11px!important;}
+      .taste-popover{position:fixed;top:56px;left:12px;right:12px;width:auto;max-height:70vh;}
+      .taste-popover::before{right:80px;}
+    }
+
   </style>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HQ25VZNV5H"></script>
@@ -612,7 +765,23 @@
 </script>
 </head>
 <body>
-<div class="top-link-row"><div class="back-to-main-wrap"><a class="back-to-main" href="index.html">← 이벤트 메인으로</a></div><a class="ridi-top-link" id="ridiTopLink" href="#" target="_blank" rel="noopener noreferrer">리디북스로</a></div>
+<div class="top-link-row">
+  <div class="back-to-main-wrap"><a class="back-to-main" href="index.html">← 이벤트 메인으로</a></div>
+  <div class="top-actions">
+    <a class="ridi-top-link" id="ridiTopLink" href="#" target="_blank" rel="noopener noreferrer">리디북스로</a>
+    <div class="taste-wrap">
+      <button class="taste-top-btn" id="tasteBtn" type="button" aria-expanded="false" aria-controls="tastePopover">🥰취향🤍</button>
+      <section class="taste-popover" id="tastePopover" aria-label="내 취향 목록">
+        <div class="taste-head">
+          <h2>♡아무도 묻지 않은 찐토리의 취향 목록♡</h2>
+          <button class="taste-close" id="tasteCloseBtn" type="button" aria-label="내 취향 닫기">×</button>
+        </div>
+        <p class="taste-desc">구석탱이에 잠시 실례실례 실례합니다👾</p>
+        <div class="taste-list" id="tasteList"></div>
+      </section>
+    </div>
+  </div>
+</div>
   <main class="page" id="top">
     <header><h1 class="title">BL 이벤트 작품 검색</h1><p class="desc">검색, 필터, 장바구니 가격 계산을 함께 사용할 수 있습니다.</p></header>
     <div class="layout">
@@ -673,6 +842,61 @@
     function makeItemId(item,index){const link=getItemLink(item);if(link)return"link:"+link;return`row:${index}:${item.title}:${item.author}:${item.price}`}
     function normalizeItem(item,index){return{id:makeItemId(item,index),originalIndex:index,type:String(item.type??"").trim(),title:String(item.title??"").trim(),author:String(item.author??"").trim(),discount:toNumber(item.discount),price:toNumber(item.price),link:getItemLink(item)}}
     function initTopRidiLink(){const el=document.getElementById("ridiTopLink");if(!el)return;const codes=[104,116,116,112,115,58,47,47,114,105,100,105,98,111,111,107,115,46,99,111,109,47,101,118,101,110,116,47,57,51,56,48,55];el.href=String.fromCharCode(...codes)}
+    const tasteItems=[
+      // link에 리디북스 작품 주소를 넣으면 오른쪽 [이동] 버튼으로 열립니다.
+      {title:"회귀자 인성 교육",meta:"외않사",link:"https://ridibooks.com/books/111138048"},
+      {title:"칼.꼽.슬 -망겜으로 구독자 1억 달성 챌린지-",meta:"#잭러셀테리어수 #슬라임빙의공",link:"https://ridibooks.com/books/111139067"},
+      {title:"헌트 포 페이트",meta:"#뱀파이어수 #헌터공",link:"https://ridibooks.com/books/111138864"},
+      {title:"전설의 대장장이를 지켜 줘!",meta:"대장장이보다는 화타같은... 귀염슴슴물",link:"https://ridibooks.com/books/111138231"},
+      {title:"예쓰 앤 예스",meta:"인헌아ㅠ",link:"https://ridibooks.com/books/111138108"},
+      {title:"극한던전 직업상인",meta:"귀여운 인형 조아해? #제목에유의",link:"https://ridibooks.com/books/111137980"},
+      {title:"기간트리카 데이브레이크!",meta:"│⁘工_工⁘) 고양이 그잡채수",link:"https://ridibooks.com/books/111138102"},
+      {title:"타임무버",meta:"#구작의맛 #아는맛이무섭긔",link:"https://ridibooks.com/books/111138172"},
+      {title:"🛒",meta:"프렛리스 원더!!",link:"https://ridibooks.com/books/111138009"},
+      {title:"🛒",meta:"북부대공의 우울",link:"https://ridibooks.com/books/111138859"}
+    ];
+    function initTastePopover(){
+      const btn=document.getElementById("tasteBtn"),pop=document.getElementById("tastePopover"),close=document.getElementById("tasteCloseBtn"),list=document.getElementById("tasteList");
+      if(!btn||!pop||!close||!list)return;
+      function renderTasteList(){
+        list.innerHTML="";
+        tasteItems.forEach(item=>{
+          const row=document.createElement("div");
+          row.className="taste-item";
+          const text=document.createElement("div");
+          const title=document.createElement("p");
+          title.className="taste-item-title";
+          title.textContent=item.title||"제목 없음";
+          const meta=document.createElement("p");
+          meta.className="taste-item-meta";
+          meta.textContent=item.meta||"";
+          text.append(title,meta);
+          row.appendChild(text);
+          const a=document.createElement("a");
+          a.className="taste-item-link";
+          a.textContent="이동";
+          if(item.link){
+            a.href=item.link;
+            a.target="_blank";
+            a.rel="noopener noreferrer";
+          }else{
+            a.href="#";
+            a.classList.add("disabled");
+            a.setAttribute("aria-disabled","true");
+            a.tabIndex=-1;
+          }
+          row.appendChild(a);
+          list.appendChild(row);
+        });
+      }
+      function setOpen(open){pop.classList.toggle("open",open);btn.setAttribute("aria-expanded",String(open));}
+      renderTasteList();
+      btn.addEventListener("click",e=>{e.stopPropagation();setOpen(!pop.classList.contains("open"));});
+      close.addEventListener("click",()=>setOpen(false));
+      pop.addEventListener("click",e=>e.stopPropagation());
+      document.addEventListener("click",()=>setOpen(false));
+      document.addEventListener("keydown",e=>{if(e.key==="Escape")setOpen(false)});
+    }
     function uniqueSorted(values){return[...new Set(values.filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),"ko-KR",{numeric:true}))}
     function populateFilters(){uniqueSorted(state.items.map(i=>i.discount).filter(v=>v>0).map(String)).sort((a,b)=>Number(b)-Number(a)).forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v+"%";els.discountFilter.appendChild(o)});uniqueSorted(state.items.map(i=>i.type)).forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;els.typeFilter.appendChild(o)})}
     function getPriceRange(){if(els.pricePreset.value){const[min,max]=els.pricePreset.value.split("-").map(Number);return{min,max}}return{min:els.minPrice.value?toNumber(els.minPrice.value):null,max:els.maxPrice.value?toNumber(els.maxPrice.value):null}}
@@ -699,7 +923,7 @@
     function openCartSheet(){els.cartSheetBackdrop.classList.add("open");els.cartSheet.classList.add("open");document.body.classList.add("modal-open")}
     function closeCartSheet(){els.cartSheetBackdrop.classList.remove("open");els.cartSheet.classList.remove("open");document.body.classList.remove("modal-open")}
     function debounce(fn,delay){let timer;return(...args)=>{clearTimeout(timer);timer=setTimeout(()=>fn(...args),delay)}}
-    function bindEvents(){initTopRidiLink();els.searchBtn.addEventListener("click",applyFilters);els.q.addEventListener("input",debounce(applyFilters,180));els.discountFilter.addEventListener("change",applyFilters);els.pricePreset.addEventListener("change",()=>{if(els.pricePreset.value){els.minPrice.value="";els.maxPrice.value=""}applyFilters()});els.sortBy.addEventListener("change",applyFilters);els.resetTopBtn.addEventListener("click",resetAll);els.detailBtn.addEventListener("click",()=>{const open=!els.detail.classList.contains("open");els.detail.classList.toggle("open",open);els.detailBtn.setAttribute("aria-expanded",String(open));els.detailBtn.textContent=open?"상세검색 닫기 ▴":"상세검색 열기 ▾"});els.applyDetailBtn.addEventListener("click",()=>{if(els.minPrice.value||els.maxPrice.value)els.pricePreset.value="";applyFilters()});els.resetDetailBtn.addEventListener("click",()=>resetDetail(true));[els.titleOnly,els.authorOnly,els.exclude,els.minPrice,els.maxPrice].forEach(input=>input.addEventListener("input",debounce(()=>{if(input===els.minPrice||input===els.maxPrice)els.pricePreset.value="";applyFilters()},200)));els.typeFilter.addEventListener("change",applyFilters);els.loadMoreBtn.addEventListener("click",()=>{state.visibleCount+=PAGE_SIZE;render()});els.openCartSheetBtn.addEventListener("click",openCartSheet);els.closeCartSheetBtn.addEventListener("click",closeCartSheet);els.cartSheetBackdrop.addEventListener("click",closeCartSheet);document.addEventListener("keydown",e=>{if(e.key==="Escape")closeCartSheet()});els.goTopBtn.addEventListener("click",()=>document.getElementById("top").scrollIntoView({behavior:"smooth",block:"start"}));els.goBottomBtn.addEventListener("click",()=>els.bottomAnchor.scrollIntoView({behavior:"smooth",block:"end"}))}
+    function bindEvents(){initTopRidiLink();initTastePopover();els.searchBtn.addEventListener("click",applyFilters);els.q.addEventListener("input",debounce(applyFilters,180));els.discountFilter.addEventListener("change",applyFilters);els.pricePreset.addEventListener("change",()=>{if(els.pricePreset.value){els.minPrice.value="";els.maxPrice.value=""}applyFilters()});els.sortBy.addEventListener("change",applyFilters);els.resetTopBtn.addEventListener("click",resetAll);els.detailBtn.addEventListener("click",()=>{const open=!els.detail.classList.contains("open");els.detail.classList.toggle("open",open);els.detailBtn.setAttribute("aria-expanded",String(open));els.detailBtn.textContent=open?"상세검색 닫기 ▴":"상세검색 열기 ▾"});els.applyDetailBtn.addEventListener("click",()=>{if(els.minPrice.value||els.maxPrice.value)els.pricePreset.value="";applyFilters()});els.resetDetailBtn.addEventListener("click",()=>resetDetail(true));[els.titleOnly,els.authorOnly,els.exclude,els.minPrice,els.maxPrice].forEach(input=>input.addEventListener("input",debounce(()=>{if(input===els.minPrice||input===els.maxPrice)els.pricePreset.value="";applyFilters()},200)));els.typeFilter.addEventListener("change",applyFilters);els.loadMoreBtn.addEventListener("click",()=>{state.visibleCount+=PAGE_SIZE;render()});els.openCartSheetBtn.addEventListener("click",openCartSheet);els.closeCartSheetBtn.addEventListener("click",closeCartSheet);els.cartSheetBackdrop.addEventListener("click",closeCartSheet);document.addEventListener("keydown",e=>{if(e.key==="Escape")closeCartSheet()});els.goTopBtn.addEventListener("click",()=>document.getElementById("top").scrollIntoView({behavior:"smooth",block:"start"}));els.goBottomBtn.addEventListener("click",()=>els.bottomAnchor.scrollIntoView({behavior:"smooth",block:"end"}))}
     async function loadData(){try{const res=await fetch("./events.json",{cache:"no-store"});if(!res.ok)throw new Error("events.json 파일을 찾을 수 없습니다.");state.raw=await res.json();if(!Array.isArray(state.raw))throw new Error("events.json은 배열 형식이어야 합니다.")}catch(e){els.error.classList.remove("hidden");els.error.textContent="events.json을 불러오지 못했습니다. index.html과 같은 위치에 events.json을 올려주세요.";state.raw=[]}state.items=state.raw.map(normalizeItem).filter(i=>i.title||i.author);loadCart();const valid=new Set(state.items.map(i=>i.id));state.cartIds=new Set([...state.cartIds].filter(id=>valid.has(id)));saveCart();populateFilters();bindEvents();applyFilters()}
     loadData();
   </script>
