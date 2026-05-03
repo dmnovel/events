@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BL 이벤트 작품 검색</title>
+  <title>리디북스 BL 할인 검색</title>
   <style>
     :root {
       --bg:#f7f4ef; --card:#ffffff; --text:#302a27; --muted:#7c706b; --line:#e8dfda;
@@ -753,6 +753,22 @@
       .taste-popover::before{right:80px;}
     }
 
+
+    /* Past discount modal */
+    .history-modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:80;padding:18px;align-items:center;justify-content:center}
+    .history-modal-backdrop.open{display:flex}
+    .history-modal{width:min(440px,100%);max-height:82vh;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 46px rgba(70,55,48,.22);padding:20px}
+    .history-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .history-head h2{margin:0;font-size:17px;font-weight:950;letter-spacing:-.03em;line-height:1.45;color:#251f1d}
+    .history-close{width:34px!important;min-height:34px!important;padding:0!important;border-radius:999px!important;background:#f4eeee!important;color:#6f5a50!important;border:1px solid #ead8da!important;flex:0 0 auto}
+    .history-meta{margin:0 0 15px;color:#5f4c43;font-size:13px;font-weight:800;line-height:1.45}
+    .history-list{display:grid;gap:9px}
+    .history-row{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #ead8da;background:#fffaf7;border-radius:13px;padding:11px 12px}
+    .history-date{font-weight:950;color:#4f3c36;font-size:15px}
+    .history-rate{font-weight:950;color:#fff;background:#a97882;border:1px solid #a97882;border-radius:999px;padding:5px 12px;min-width:58px;text-align:center;box-shadow:0 2px 8px rgba(169,120,130,.18)}
+    .history-empty{padding:18px 12px;text-align:center;color:var(--muted);border:1px dashed #ead8da;border-radius:13px;background:#fffaf7}
+    .go.disabled{opacity:.48;cursor:not-allowed;filter:none!important}
+
   </style>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HQ25VZNV5H"></script>
@@ -770,7 +786,7 @@
   <div class="top-actions">
     <a class="ridi-top-link" id="ridiTopLink" href="#" target="_blank" rel="noopener noreferrer">리디북스로</a>
     <div class="taste-wrap">
-      <button class="taste-top-btn" id="tasteBtn" type="button" aria-expanded="false" aria-controls="tastePopover">🥰취향🤍</button>
+      <button class="taste-top-btn" id="tasteBtn" type="button" aria-expanded="false" aria-controls="tastePopover">🥰🤍</button>
       <section class="taste-popover" id="tastePopover" aria-label="내 취향 목록">
         <div class="taste-head">
           <h2>♡아무도 묻지 않은 찐토리의 취향 목록♡</h2>
@@ -783,7 +799,7 @@
   </div>
 </div>
   <main class="page" id="top">
-    <header><h1 class="title">BL 이벤트 작품 검색</h1><p class="desc">검색, 필터, 장바구니 가격 계산을 함께 사용할 수 있습니다.</p></header>
+    <header><h1 class="title">리디북스 BL 할인 검색</h1><p class="desc">검색, 필터, 장바구니 가격 계산을 함께 사용할 수 있습니다.</p></header>
     <div class="layout">
       <div class="main-col">
         <section class="panel" aria-label="검색 및 필터">
@@ -828,6 +844,17 @@
   </main>
   <div class="mobile-cart-bar" aria-label="모바일 장바구니 요약"><div class="mobile-cart-text"><strong id="mobileCartSummary">장바구니 0개 · 총 0원</strong><span id="mobileRemainSummary">목표금액을 입력하면 남은금액이 표시됩니다</span></div><button id="openCartSheetBtn" class="mobile-cart-open" type="button">보기</button></div>
   <div id="cartSheetBackdrop" class="cart-sheet-backdrop"></div><section id="cartSheet" class="cart-sheet" aria-label="모바일 장바구니"><div class="sheet-handle"></div><div id="mobileCartMount"></div><button id="closeCartSheetBtn" class="sheet-close secondary" type="button">닫기</button></section>
+
+  <div id="historyModalBackdrop" class="history-modal-backdrop" aria-hidden="true">
+    <section class="history-modal" role="dialog" aria-modal="true" aria-labelledby="historyModalTitle">
+      <div class="history-head">
+        <h2 id="historyModalTitle">과거 할인율</h2>
+        <button id="historyModalClose" class="history-close" type="button" aria-label="닫기">×</button>
+      </div>
+      <p id="historyModalMeta" class="history-meta"></p>
+      <div id="historyModalBody" class="history-list"></div>
+    </section>
+  </div>
   <div class="float-nav" aria-label="페이지 이동"><button id="goTopBtn" type="button" aria-label="맨 위로">↑</button><button id="goBottomBtn" type="button" aria-label="맨 아래로">↓</button></div>
   <script>
     const PAGE_SIZE=100,CART_STORAGE_KEY="ridi-event-cart-v3",TARGET_STORAGE_KEY="ridi-event-cart-target-v3";
@@ -840,7 +867,7 @@
     function decodeLink(value){try{return atob(String(value||"").trim())}catch{return ""}}
     function getItemLink(item){return decodeLink(item.linkCode||item.u||"")||String(item.link??"").trim()}
     function makeItemId(item,index){const link=getItemLink(item);if(link)return"link:"+link;return`row:${index}:${item.title}:${item.author}:${item.price}`}
-    function normalizeItem(item,index){return{id:makeItemId(item,index),originalIndex:index,type:String(item.type??"").trim(),title:String(item.title??"").trim(),author:String(item.author??"").trim(),discount:toNumber(item.discount),price:toNumber(item.price),link:getItemLink(item)}}
+    function normalizeItem(item,index){return{id:makeItemId(item,index),originalIndex:index,type:String(item.type??"").trim(),title:String(item.title??"").trim(),author:String(item.author??"").trim(),discount:toNumber(item.discount),price:toNumber(item.price),link:getItemLink(item),history:String(item.history??item.pastDiscount??item["과거할인율"]??"").trim()}}
     function initTopRidiLink(){const el=document.getElementById("ridiTopLink");if(!el)return;const codes=[104,116,116,112,115,58,47,47,114,105,100,105,98,111,111,107,115,46,99,111,109,47,101,118,101,110,116,47,57,51,56,48,55];el.href=String.fromCharCode(...codes)}
     const tasteItems=[
       // link에 리디북스 작품 주소를 넣으면 오른쪽 [이동] 버튼으로 열립니다.
@@ -907,7 +934,10 @@
     function applySort(list){const sort=els.sortBy.value,arr=[...list],remain=getRemain();const byText=f=>(a,b)=>String(a[f]||"").localeCompare(String(b[f]||""),"ko-KR",{numeric:true});if(sort==="titleAsc")arr.sort(byText("title"));if(sort==="authorAsc")arr.sort(byText("author"));if(sort==="priceAsc")arr.sort((a,b)=>a.price-b.price);if(sort==="priceDesc")arr.sort((a,b)=>b.price-a.price);if(sort==="discountDesc")arr.sort((a,b)=>b.discount-a.discount);if(sort==="default")arr.sort((a,b)=>a.originalIndex-b.originalIndex);if(sort==="underRemainAsc"||sort==="underRemainDesc"){const usable=remain>0?remain:-1;arr.sort((a,b)=>{const af=a.price<=usable?0:1,bf=b.price<=usable?0:1;if(af!==bf)return af-bf;return sort==="underRemainAsc"?a.price-b.price:b.price-a.price})}return arr}
     function updateSummary(){const p=[];if(els.q.value.trim())p.push(`통합: ${els.q.value.trim()}`);if(els.discountFilter.value)p.push(`할인율: ${els.discountFilter.value}%`);if(els.pricePreset.value)p.push(`금액대: ${els.pricePreset.options[els.pricePreset.selectedIndex].textContent}`);if(els.sortBy.value!=="default")p.push(`정렬: ${els.sortBy.options[els.sortBy.selectedIndex].textContent}`);if(els.titleOnly.value.trim())p.push(`제목: ${els.titleOnly.value.trim()}`);if(els.authorOnly.value.trim())p.push(`작가: ${els.authorOnly.value.trim()}`);if(els.typeFilter.value)p.push(`구매유형: ${els.typeFilter.value}`);if(els.minPrice.value.trim()||els.maxPrice.value.trim())p.push(`직접금액: ${els.minPrice.value||"0"}~${els.maxPrice.value||"∞"}`);if(els.exclude.value.trim())p.push(`제외: ${els.exclude.value.trim()}`);els.activeSummary.textContent=p.length?p.join(" · "):"필터 없음"}
     function makeBadge(text,cls){const s=document.createElement("span");s.className=`badge ${cls||""}`.trim();s.textContent=text;return s}
-    function render(){const total=state.filtered.length,visible=state.filtered.slice(0,state.visibleCount);els.resultCount.textContent=total.toLocaleString("ko-KR");els.loadedCount.textContent=`표시 ${visible.length.toLocaleString("ko-KR")}개`;els.list.innerHTML="";els.empty.classList.toggle("hidden",total!==0);els.loadMoreWrap.classList.toggle("hidden",state.visibleCount>=total);const frag=document.createDocumentFragment();visible.forEach(item=>{const card=document.createElement("article");card.className="card";const info=document.createElement("div");const title=document.createElement(item.link?"a":"span");title.className="book-title";title.textContent=item.title||"(제목 없음)";if(item.link){title.href=item.link;title.target="_blank";title.rel="noopener noreferrer"}const metaLine=document.createElement("div");metaLine.className="book-meta-line";const meta=document.createElement("span");meta.className="book-meta";meta.textContent=item.author||"작가 정보 없음";const badges=document.createElement("div");badges.className="badges";if(item.discount)badges.appendChild(makeBadge(formatDiscount(item.discount),"discount"));badges.appendChild(makeBadge(formatPrice(item.price),"price"));if(item.type)badges.appendChild(makeBadge(item.type,"type"));info.className="book-info";metaLine.append(meta);info.append(title,metaLine);card.appendChild(info);card.appendChild(badges);const actions=document.createElement("div");actions.className="card-actions";if(item.link){const go=document.createElement("a");go.className="go";go.href=item.link;go.target="_blank";go.rel="noopener noreferrer";go.textContent="보러가기";actions.appendChild(go)}const btn=document.createElement("button");const added=state.cartIds.has(item.id);btn.className="cart-btn"+(added?" added":"");btn.type="button";btn.textContent=added?"담김 ✓":"담기";btn.addEventListener("click",()=>toggleCart(item.id));actions.appendChild(btn);card.appendChild(actions);frag.appendChild(card)});els.list.appendChild(frag);renderCart()}
+    function parseHistory(value){return String(value||"").split(",").map(v=>v.trim()).filter(Boolean).map(v=>{const m=v.match(/^(\d{6})\s*(.*)$/);return m?{date:m[1],rate:m[2].trim()||"-"}:{date:"",rate:v}})}
+    function openHistoryModal(item){const backdrop=document.getElementById("historyModalBackdrop"),title=document.getElementById("historyModalTitle"),meta=document.getElementById("historyModalMeta"),body=document.getElementById("historyModalBody");if(!backdrop||!title||!meta||!body)return;title.textContent=item.title||"과거 할인율";meta.textContent=(item.author||"작가 정보 없음")+" · 과거 마크다운 할인율";body.innerHTML="";const entries=parseHistory(item.history);if(!entries.length){const empty=document.createElement("div");empty.className="history-empty";empty.textContent="정리된 과거 할인율이 없습니다.";body.appendChild(empty)}else{entries.forEach(entry=>{const row=document.createElement("div");row.className="history-row";const date=document.createElement("span");date.className="history-date";date.textContent=entry.date||"기록";const rate=document.createElement("span");rate.className="history-rate";rate.textContent=entry.rate;row.append(date,rate);body.appendChild(row)})}backdrop.classList.add("open");backdrop.setAttribute("aria-hidden","false");document.body.classList.add("modal-open")}
+    function closeHistoryModal(){const backdrop=document.getElementById("historyModalBackdrop");if(!backdrop)return;backdrop.classList.remove("open");backdrop.setAttribute("aria-hidden","true");document.body.classList.remove("modal-open")}
+    function render(){const total=state.filtered.length,visible=state.filtered.slice(0,state.visibleCount);els.resultCount.textContent=total.toLocaleString("ko-KR");els.loadedCount.textContent=`표시 ${visible.length.toLocaleString("ko-KR")}개`;els.list.innerHTML="";els.empty.classList.toggle("hidden",total!==0);els.loadMoreWrap.classList.toggle("hidden",state.visibleCount>=total);const frag=document.createDocumentFragment();visible.forEach(item=>{const card=document.createElement("article");card.className="card";const info=document.createElement("div");const title=document.createElement(item.link?"a":"span");title.className="book-title";title.textContent=item.title||"(제목 없음)";if(item.link){title.href=item.link;title.target="_blank";title.rel="noopener noreferrer"}const metaLine=document.createElement("div");metaLine.className="book-meta-line";const meta=document.createElement("span");meta.className="book-meta";meta.textContent=item.author||"작가 정보 없음";const badges=document.createElement("div");badges.className="badges";if(item.discount)badges.appendChild(makeBadge(formatDiscount(item.discount),"discount"));badges.appendChild(makeBadge(formatPrice(item.price),"price"));if(item.type)badges.appendChild(makeBadge(item.type,"type"));info.className="book-info";metaLine.append(meta);info.append(title,metaLine);card.appendChild(info);card.appendChild(badges);const actions=document.createElement("div");actions.className="card-actions";const historyBtn=document.createElement("button");historyBtn.className="go"+(item.history?"":" disabled");historyBtn.type="button";historyBtn.textContent="과거";historyBtn.title=item.history?"과거 할인율 보기":"정리된 과거 할인율 없음";historyBtn.addEventListener("click",()=>openHistoryModal(item));actions.appendChild(historyBtn);const btn=document.createElement("button");const added=state.cartIds.has(item.id);btn.className="cart-btn"+(added?" added":"");btn.type="button";btn.textContent=added?"담김 ✓":"담기";btn.addEventListener("click",()=>toggleCart(item.id));actions.appendChild(btn);card.appendChild(actions);frag.appendChild(card)});els.list.appendChild(frag);renderCart()}
     function resetAll(){els.q.value="";els.discountFilter.value="";els.pricePreset.value="";els.sortBy.value="default";resetDetail(false);applyFilters()}
     function resetDetail(apply=true){els.titleOnly.value="";els.authorOnly.value="";els.typeFilter.value="";els.minPrice.value="";els.maxPrice.value="";els.exclude.value="";if(apply)applyFilters()}
     function toggleCart(id){state.cartIds.has(id)?state.cartIds.delete(id):state.cartIds.add(id);saveCart();render()}
@@ -923,7 +953,7 @@
     function openCartSheet(){els.cartSheetBackdrop.classList.add("open");els.cartSheet.classList.add("open");document.body.classList.add("modal-open")}
     function closeCartSheet(){els.cartSheetBackdrop.classList.remove("open");els.cartSheet.classList.remove("open");document.body.classList.remove("modal-open")}
     function debounce(fn,delay){let timer;return(...args)=>{clearTimeout(timer);timer=setTimeout(()=>fn(...args),delay)}}
-    function bindEvents(){initTopRidiLink();initTastePopover();els.searchBtn.addEventListener("click",applyFilters);els.q.addEventListener("input",debounce(applyFilters,180));els.discountFilter.addEventListener("change",applyFilters);els.pricePreset.addEventListener("change",()=>{if(els.pricePreset.value){els.minPrice.value="";els.maxPrice.value=""}applyFilters()});els.sortBy.addEventListener("change",applyFilters);els.resetTopBtn.addEventListener("click",resetAll);els.detailBtn.addEventListener("click",()=>{const open=!els.detail.classList.contains("open");els.detail.classList.toggle("open",open);els.detailBtn.setAttribute("aria-expanded",String(open));els.detailBtn.textContent=open?"상세검색 닫기 ▴":"상세검색 열기 ▾"});els.applyDetailBtn.addEventListener("click",()=>{if(els.minPrice.value||els.maxPrice.value)els.pricePreset.value="";applyFilters()});els.resetDetailBtn.addEventListener("click",()=>resetDetail(true));[els.titleOnly,els.authorOnly,els.exclude,els.minPrice,els.maxPrice].forEach(input=>input.addEventListener("input",debounce(()=>{if(input===els.minPrice||input===els.maxPrice)els.pricePreset.value="";applyFilters()},200)));els.typeFilter.addEventListener("change",applyFilters);els.loadMoreBtn.addEventListener("click",()=>{state.visibleCount+=PAGE_SIZE;render()});els.openCartSheetBtn.addEventListener("click",openCartSheet);els.closeCartSheetBtn.addEventListener("click",closeCartSheet);els.cartSheetBackdrop.addEventListener("click",closeCartSheet);document.addEventListener("keydown",e=>{if(e.key==="Escape")closeCartSheet()});els.goTopBtn.addEventListener("click",()=>document.getElementById("top").scrollIntoView({behavior:"smooth",block:"start"}));els.goBottomBtn.addEventListener("click",()=>els.bottomAnchor.scrollIntoView({behavior:"smooth",block:"end"}))}
+    function bindEvents(){initTopRidiLink();initTastePopover();els.searchBtn.addEventListener("click",applyFilters);els.q.addEventListener("input",debounce(applyFilters,180));els.discountFilter.addEventListener("change",applyFilters);els.pricePreset.addEventListener("change",()=>{if(els.pricePreset.value){els.minPrice.value="";els.maxPrice.value=""}applyFilters()});els.sortBy.addEventListener("change",applyFilters);els.resetTopBtn.addEventListener("click",resetAll);els.detailBtn.addEventListener("click",()=>{const open=!els.detail.classList.contains("open");els.detail.classList.toggle("open",open);els.detailBtn.setAttribute("aria-expanded",String(open));els.detailBtn.textContent=open?"상세검색 닫기 ▴":"상세검색 열기 ▾"});els.applyDetailBtn.addEventListener("click",()=>{if(els.minPrice.value||els.maxPrice.value)els.pricePreset.value="";applyFilters()});els.resetDetailBtn.addEventListener("click",()=>resetDetail(true));[els.titleOnly,els.authorOnly,els.exclude,els.minPrice,els.maxPrice].forEach(input=>input.addEventListener("input",debounce(()=>{if(input===els.minPrice||input===els.maxPrice)els.pricePreset.value="";applyFilters()},200)));els.typeFilter.addEventListener("change",applyFilters);els.loadMoreBtn.addEventListener("click",()=>{state.visibleCount+=PAGE_SIZE;render()});els.openCartSheetBtn.addEventListener("click",openCartSheet);els.closeCartSheetBtn.addEventListener("click",closeCartSheet);els.cartSheetBackdrop.addEventListener("click",closeCartSheet);document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeCartSheet();closeHistoryModal()}});const historyBackdrop=document.getElementById("historyModalBackdrop"),historyClose=document.getElementById("historyModalClose");if(historyBackdrop)historyBackdrop.addEventListener("click",e=>{if(e.target===historyBackdrop)closeHistoryModal()});if(historyClose)historyClose.addEventListener("click",closeHistoryModal);els.goTopBtn.addEventListener("click",()=>document.getElementById("top").scrollIntoView({behavior:"smooth",block:"start"}));els.goBottomBtn.addEventListener("click",()=>els.bottomAnchor.scrollIntoView({behavior:"smooth",block:"end"}))}
     async function loadData(){try{const res=await fetch("./events.json",{cache:"no-store"});if(!res.ok)throw new Error("events.json 파일을 찾을 수 없습니다.");state.raw=await res.json();if(!Array.isArray(state.raw))throw new Error("events.json은 배열 형식이어야 합니다.")}catch(e){els.error.classList.remove("hidden");els.error.textContent="events.json을 불러오지 못했습니다. index.html과 같은 위치에 events.json을 올려주세요.";state.raw=[]}state.items=state.raw.map(normalizeItem).filter(i=>i.title||i.author);loadCart();const valid=new Set(state.items.map(i=>i.id));state.cartIds=new Set([...state.cartIds].filter(id=>valid.has(id)));saveCart();populateFilters();bindEvents();applyFilters()}
     loadData();
   </script>
